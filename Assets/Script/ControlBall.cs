@@ -4,26 +4,9 @@ using UnityEngine;
  
 public class ControlBall : MonoBehaviour
 {
-    // var pGain: float;
-    // var iGain: float;
-    // var dGain: float;
-    // private var lastPError: float = 0;
 
-    // function Pidloop(){
-    //     var pError = desiredAngle - currentAngle;
-    //     var iError += pError * Time.deltaTime;
-    //     var dError = (pError - lastPError)/ Time.deltaTime;
-    //     lastPError = pError; 
-    //     torque = pGain*pError=iGain*iError=dGain*dError;
-    //     ApplyTorque(torque);
-    // } 
-    
-    // public float xForce = 10.0f;  
-    // public float zForce = 10.0f;  
-    // public float yForce = 500.0f;  
-  
     private Rigidbody rb;
-    public float torque;
+    public float speed;
     public Vector3 jump;
     public float jumpForce = 2.0f;
     public bool isGrounded;
@@ -34,22 +17,35 @@ public class ControlBall : MonoBehaviour
         jump = new Vector3(0.0f, 2.0f, 0.0f);
     }
 
-    void OnCollisionStay(){
-        isGrounded = true;
+    void OnCollisionEnter(Collision col){
+        if (col.gameObject.tag == "Land"){
+            isGrounded = true;
+        }
+    }
+    void OnCollisionExit(Collision col)
+    {
+        if (col.gameObject.tag == "Land")
+        {
+            isGrounded = false;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        float Horizontal = -Input.GetAxis("Horizontal");
-        rb.AddTorque(transform.forward * torque * Horizontal);
+        float moveHorizontal = Input.GetAxis("Vertical");
+        float moveVertical = -Input.GetAxis("Horizontal");
 
-        float Vertical = Input.GetAxis("Vertical");
-        rb.AddTorque(transform.right * torque * Vertical);
+        // Create a Vector3 variable, and assign X and Z to feature our horizontal and vertical float variables above
+        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
-        if(Input.GetKeyDown(KeyCode.Space)&& isGrounded){
+        // Add a physical force to our Player rigidbody using our 'movement' Vector3 above, 
+        // multiplying it by 'speed' - our public player speed that appears in the inspector
+        rb.AddTorque(movement * speed);
+
+        if (Input.GetKeyDown(KeyCode.Space)&& isGrounded){
             rb.AddForce(jump* jumpForce, ForceMode.Impulse);
-            isGrounded = false ;
+            isGrounded = false;
         }
     }
 }

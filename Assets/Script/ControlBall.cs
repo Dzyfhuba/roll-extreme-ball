@@ -17,17 +17,8 @@ public class ControlBall : MonoBehaviour
         jump = new Vector3(0.0f, 2.0f, 0.0f);
     }
 
-    void OnCollisionEnter(Collision col){
-        if (col.gameObject.tag == "Land"){
-            isGrounded = true;
-        }
-    }
-    void OnCollisionExit(Collision col)
-    {
-        if (col.gameObject.tag == "Land")
-        {
-            isGrounded = false;
-        }
+    void OnCollisionStay(Collision col){
+           isGrounded = true;
     }
 
     // Update is called once per frame
@@ -44,8 +35,8 @@ public class ControlBall : MonoBehaviour
         rb.AddTorque(movement * speed);
 
         if (Input.GetKeyDown(KeyCode.Space)&& isGrounded){
-            rb.AddForce(jump* jumpForce, ForceMode.Impulse);
             isGrounded = false;
+            rb.AddForce(jump* jumpForce, ForceMode.Impulse);
         }
     }
 }
